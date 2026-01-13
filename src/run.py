@@ -1,9 +1,11 @@
 from data_loader import load_price_data
 from features import build_features
+from sklearn.metrics import accuracy_score, classification_report
+from models import lr_pipeline, rf_pipeline, dummy_pipeline
 
 
 def main():
-    df = load_price_data("AAPL", "2024-01-01", "2024-12-31")
+    df = load_price_data("AAPL", "2019-01-01", "2024-12-31")
     df_feat = build_features(df)
 
     df = df_feat.copy()
@@ -19,9 +21,25 @@ def main():
     X_test = X.iloc[split_idx:]
     y_test = y.iloc[split_idx:]
 
-    print(len(X_train))
-    print(len(X_test))
-    print(y_test.value_counts(normalize=True))
+    print("Train size:",len(X_train))
+    print("Test size:",len(X_test))
+    print("Lable Distribution: \n", y_test.value_counts(normalize=True))
+
+    models_to_run = {
+        "Baseline (Dummy)": dummy_pipeline(),
+        "Logistic Regression": lr_pipeline(),
+        "Random Forest": rf_pipeline()
+    }
+    for name, pipeline in models_to_run.items():
+        pipeline.fit(X_train, y_train)
+
+        y_pred = pipeline.predict(X_test)
+
+        acc = accuracy_score(y_test, y_pred)
+        print(f"--> Accuracy: {acc:.4f}")
+
+        if name != "Baseline (Dummy)":
+            print(classification_report(y_test, y_pred))
 
 if __name__ == "__main__":
     main()
