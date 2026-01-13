@@ -1,6 +1,6 @@
 from data_loader import load_price_data
+from evaluation import evaluate_classifier
 from features import build_features
-from sklearn.metrics import accuracy_score, classification_report
 from models import lr_pipeline, rf_pipeline, dummy_pipeline
 
 
@@ -21,8 +21,8 @@ def main():
     X_test = X.iloc[split_idx:]
     y_test = y.iloc[split_idx:]
 
-    print("Train size:",len(X_train))
-    print("Test size:",len(X_test))
+    print("Train size:", len(X_train))
+    print("Test size:", len(X_test))
     print("Lable Distribution: \n", y_test.value_counts(normalize=True))
 
     models_to_run = {
@@ -30,16 +30,17 @@ def main():
         "Logistic Regression": lr_pipeline(),
         "Random Forest": rf_pipeline()
     }
+    
+    results = []
+
     for name, pipeline in models_to_run.items():
         pipeline.fit(X_train, y_train)
 
         y_pred = pipeline.predict(X_test)
 
-        acc = accuracy_score(y_test, y_pred)
-        print(f"--> Accuracy: {acc:.4f}")
+        metrics = evaluate_classifier(y_test, y_pred, model_name=name)
+        results.append(metrics)
 
-        if name != "Baseline (Dummy)":
-            print(classification_report(y_test, y_pred))
 
 if __name__ == "__main__":
     main()

@@ -28,4 +28,4 @@ python src/run.py
 
 ## Data Source
 Price data is downloaded using `yfinance` (Yahoo Finance).
-Currently the pipeline runs on AAPL daily data for 2024.
+Currently, the pipeline runs on AAPL daily data from 2019 to 2024.
