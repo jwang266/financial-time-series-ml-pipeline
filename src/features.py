@@ -1,10 +1,14 @@
+import numpy as np
 import pandas as pd
 
 
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
-    df["daily_return"] = df["Close"].pct_change()
+    df["daily_return"] = np.log(df["Close"] / df["Close"].shift(1))
+    df["lag_1"] = df["daily_return"].shift(1)
+    df["lag_2"] = df["daily_return"].shift(2)
+    df["lag_3"] = df["daily_return"].shift(3)
     df["rolling_mean_return_5d"] = df["daily_return"].rolling(window=5, min_periods=5).mean()
     df["rolling_volatility_5d"] = df["daily_return"].rolling(window=5, min_periods=5).std()
     df["rolling_mean_return_20d"] = df["daily_return"].rolling(window=20, min_periods=20).mean()
@@ -20,6 +24,9 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     # drop rows with missing features or labels
     feature_cols = [
         "daily_return",
+        "lag_1",
+        "lag_2",
+        "lag_3",
         "rolling_mean_return_5d",
         "rolling_volatility_5d",
         "rolling_mean_return_20d",

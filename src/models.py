@@ -20,6 +20,7 @@ def rf_pipeline():
         ('model', RandomForestClassifier(n_estimators=200,
                                          max_depth=6,
                                          min_samples_leaf=5,
+                                         class_weight="balanced",
                                          random_state=42,
                                          n_jobs=-1))
     ])
@@ -28,6 +29,6 @@ def rf_pipeline():
 
 def dummy_pipeline():
     pipeline = Pipeline([
-        ('model', DummyClassifier(strategy='most_frequent'))
+        ('model', DummyClassifier(strategy='prior'))
     ])
     return pipeline
